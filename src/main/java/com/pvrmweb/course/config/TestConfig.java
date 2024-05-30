@@ -25,7 +25,7 @@ public class TestConfig implements CommandLineRunner {
 			
 			for (int i = 0; i < 50; i++) {
 				String name = faker.name().fullName();
-				String email = name.replace(" ", "_")+"@gmail.com";
+				String email = name.replace(" ", "_").replace(".", "")+"@gmail.com";
 				String phone = faker.phoneNumber().cellPhone();
 				String password = "password";
 				
