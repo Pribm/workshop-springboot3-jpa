@@ -8,9 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.github.javafaker.Faker;
+import com.pvrmweb.course.entities.Category;
 import com.pvrmweb.course.entities.Order;
 import com.pvrmweb.course.entities.User;
 import com.pvrmweb.course.entities.enums.OrderStatus;
+import com.pvrmweb.course.repositories.CategoryRepository;
 import com.pvrmweb.course.repositories.OrderRepository;
 import com.pvrmweb.course.repositories.UserRepository;
 
@@ -20,15 +22,19 @@ public class TestConfig implements CommandLineRunner {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
 	@Autowired
 	private OrderRepository orderRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 
 	@Override
 	public void run(String... args) throws Exception {
 		
+		Faker faker = new Faker();
 		if(userRepository.count() < 50) {
-			Faker faker = new Faker();
 			
 			for (int i = 0; i < 50; i++) {
 				String name = faker.name().fullName();
@@ -40,8 +46,11 @@ public class TestConfig implements CommandLineRunner {
 				
 				Order order = new Order(null, Instant.parse("2019-07-21T00:00:00Z"), OrderStatus.SHIPPED, u);
 				this.orderRepository.save(order);
-				
 			}
+		}
+		
+		for (int i = 0; i < 20; i++) {
+			this.categoryRepository.save(new Category(null, faker.commerce().department()));
 		}
 	}
 }
