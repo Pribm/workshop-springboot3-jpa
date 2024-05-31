@@ -1,6 +1,8 @@
 package com.pvrmweb.course.config;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -10,10 +12,12 @@ import org.springframework.context.annotation.Profile;
 import com.github.javafaker.Faker;
 import com.pvrmweb.course.entities.Category;
 import com.pvrmweb.course.entities.Order;
+import com.pvrmweb.course.entities.Product;
 import com.pvrmweb.course.entities.User;
 import com.pvrmweb.course.entities.enums.OrderStatus;
 import com.pvrmweb.course.repositories.CategoryRepository;
 import com.pvrmweb.course.repositories.OrderRepository;
+import com.pvrmweb.course.repositories.ProductRepository;
 import com.pvrmweb.course.repositories.UserRepository;
 
 @Configuration
@@ -29,11 +33,15 @@ public class TestConfig implements CommandLineRunner {
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
+	@Autowired
+	private ProductRepository productRepository;
+	
 
 	@Override
 	public void run(String... args) throws Exception {
 		
 		Faker faker = new Faker();
+		
 		if(userRepository.count() < 50) {
 			
 			for (int i = 0; i < 50; i++) {
@@ -49,8 +57,17 @@ public class TestConfig implements CommandLineRunner {
 			}
 		}
 		
+		Set<Category> categoriesList = new HashSet<>();
+		
 		for (int i = 0; i < 20; i++) {
-			this.categoryRepository.save(new Category(null, faker.commerce().department()));
+			Category c = this.categoryRepository.save(new Category(null, faker.commerce().department()));
+			categoriesList.add(c);
+		}
+		
+		for (int i = 0; i < 20; i++) {
+			Product product = new Product(null, faker.commerce().productName(), faker.lorem().paragraphs(1).get(0), Double.parseDouble(faker.commerce().price().replace(",", ".")), "lorem/ipsum/123");
+			product.getCategories().addAll(categoriesList);
+			this.productRepository.save(product);
 		}
 	}
 }
